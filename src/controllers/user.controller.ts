@@ -96,15 +96,17 @@ export class UserControllers {
       const data = req.body as userInterface;
 
       const result = await UserServices.updateOneService(id, data);
-      if(!result){
-        return rep.status(404).send({success:false , message:"User not found ..... "});
+      if (!result) {
+        return rep
+          .status(404)
+          .send({ success: false, message: "User not found ..... " });
       }
 
-     await redis.del(`user:${id}`);
-      
-      const le = await redis.set(`user:${id}` , JSON.stringify(result));
+      await redis.del(`user:${id}`);
+
+      const le = await redis.set(`user:${id}`, JSON.stringify(result));
       console.log(le);
-      
+
       rep.status(201).send({
         success: true,
         data: result,
@@ -114,6 +116,35 @@ export class UserControllers {
       rep.status(500).send({
         success: false,
         message: "User not updated  ...",
+      });
+    }
+  };
+
+  deleteOneUser = async (
+    req: FastifyRequest<{ Params: { id: string } }>,
+    rep: FastifyReply
+  ) => {
+    try {
+      const id = req.params.id as string;
+      const result = await UserServices.deleteOneService(id);
+      if (!result) {
+        return rep
+          .status(404)
+          .send({
+            success: false,
+            message: "User not found or already deleted.",
+          });
+      }
+      rep.status(200).send({
+        success: true,
+        data: result,
+        message: "User deleted successfully ....",
+      });
+    } catch (error) {
+      rep.status(500).send({
+        success: false,
+        message: "User not deleted ...",
+        error: error instanceof Error ? error.message : "Unknown error"
       });
     }
   };

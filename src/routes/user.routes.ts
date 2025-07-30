@@ -8,4 +8,5 @@ export default async function userRoutes(fastify: FastifyInstance) {
   fastify.get("/all", UserControllers.getAllUsers);
   fastify.get("/get/:id", UserControllers.getOneUser);
   fastify.put("/update/:id", userController.updateOneUser);
+  fastify.delete("/delete/:id", userController.deleteOneUser);
 }
